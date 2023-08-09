@@ -7,7 +7,7 @@ const optimismSDK = require("@eth-optimism/sdk")
 require('dotenv').config()
 
 // Global variable because we need them almost everywhere
-let crossChainMessenger
+let crossChainMessenger 
 
 
 const setup = async() => {
@@ -16,11 +16,25 @@ const setup = async() => {
   l2SignerOrProvider = new ethers.providers.JsonRpcProvider(process.env.L2URL)
 
   crossChainMessenger = new optimismSDK.CrossChainMessenger({
-      l1ChainId: (await l1SignerOrProvider._networkPromise).chainId,
-      l2ChainId: (await l2SignerOrProvider._networkPromise).chainId,      
-      l1SignerOrProvider: l1SignerOrProvider,
-      l2SignerOrProvider: l2SignerOrProvider
-  })
+    l1ChainId: 97,    // 97 for  BSC  Testnet
+    l2ChainId: 5611,  // 5611 for opBNB mainnet     
+    l1SignerOrProvider: l1SignerOrProvider,
+    l2SignerOrProvider: l2SignerOrProvider,
+    bedrock: true,
+    contracts: {
+      l1: {
+        "AddressManager": "0x0000000000000000000000000000000000000000",
+        "StateCommitmentChain": "0x0000000000000000000000000000000000000000",
+        "CanonicalTransactionChain": "0x0000000000000000000000000000000000000000",
+        "BondManager": "0x0000000000000000000000000000000000000000",
+        "L1CrossDomainMessenger": "0xD506952e78eeCd5d4424B1990a0c99B1568E7c2C",
+        "L1StandardBridge": "0x677311Fd2cCc511Bbc0f581E8d9a07B033D5E840",
+        "OptimismPortal": "0x4386C8ABf2009aC0c263462Da568DD9d46e52a31",
+        "L2OutputOracle": "0xFf2394Bb843012562f4349C6632a0EcB92fC8810"
+      },
+      l2: optimismSDK.DEFAULT_L2_CONTRACT_ADDRESSES,
+    }
+})
 }    // setup
 
 
@@ -65,7 +79,7 @@ const main = async () => {
     await setup()
 
     // The address we trace
-    const addr = "0xBCf86Fd70a0183433763ab0c14E7a760194f3a9F"
+    const addr = "0xf56aa90fea6c07eb0c190552caa166357a824a39";
 
     const deposits = await crossChainMessenger.getDepositsByAddress(addr)
     console.log(`Deposits by address ${addr}`)
