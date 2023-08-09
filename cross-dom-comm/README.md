@@ -1,10 +1,7 @@
-# Communication between contracts on OP Mainnet and Ethereum
-
-[![Discord](https://img.shields.io/discord/667044843901681675.svg?color=768AD4&label=discord&logo=https%3A%2F%2Fdiscordapp.com%2Fassets%2F8c9701b98ad4372b58f13fd9f65f966e.svg)](https://discord-gateway.optimism.io)
-[![Twitter Follow](https://img.shields.io/twitter/follow/optimismFND.svg?label=optimismFND&style=social)](https://twitter.com/optimismFND)
+# Communication between contracts on opBNB Testnet and BSC Testnet
 
 This tutorial teaches you how to do interlayer communication.
-You will learn how to run a contract on Ethereum that runs another contract on OP Mainnet, and also how to run a contract on OP Mainnet that calls a contract on Ethereum.
+You will learn how to run a contract on BSC that runs another contract on opBNB, and also how to run a contract on opBNB that calls a contract on BSC.
 
 [You can read more details about this process here](https://community.optimism.io/docs/developers/bridge/messaging/).
 
@@ -14,13 +11,13 @@ If you want to trace transactions, [see the tracing tutorial](../sdk-trace-tx/).
 
 ## Seeing it in action
 
-To show how this works we installed [a slightly modified version of HardHat's `Greeter.sol`](hardhat/contracts/Greeter.sol) on both L1 Goerli and OP Goerli.
+To show how this works we installed [a slightly modified version of HardHat's `Greeter.sol`](hardhat/contracts/Greeter.sol) on both BSC(L1) and opBNB (L2).
 
 
 | Network | Greeter address  |
 | ------- | ---------------- |
-| Goerli (L1) | [0x4d0fcc1Bedd933dA4121240C2955c3Ceb68AAE84](https://goerli.etherscan.io/address/0x4d0fcc1Bedd933dA4121240C2955c3Ceb68AAE84) |
-| OP Goerli (L2) | [0xE8B462EEF7Cbd4C855Ea4B65De65a5c5Bab650A9](https://goerli-optimism.etherscan.io/address/0xE8B462EEF7Cbd4C855Ea4B65De65a5c5Bab650A9) |
+| BSC (L1) | [0x04F6e0f8d032fc4fFDcA9eE56f1678DA57eB478E](https://testnet.bscscan.com/address/0x04f6e0f8d032fc4ffdca9ee56f1678da57eb478e) |
+| opBNB (L2) | [0xa06C7F6204e2ed0cf112B670Eaa53246Ae75cf74](https://opbnbscan.com/address/0xa06C7F6204e2ed0cf112B670Eaa53246Ae75cf74?p=1&tab=transaction) |
 
 #### What if somebody else uses the same contracts at the same time?
 
@@ -50,9 +47,9 @@ This setup assumes you already have [Node.js](https://nodejs.org/en/) and [yarn]
 
 1. Copy `.env.example` to `.env` and edit it:
 
-   1. Set `MNEMONIC` to point to an account that has ETH on the Goerli test network and the OP Goerli test network.
-   1. Set `GOERLI_ALCHEMY_KEY` to the key for the Goerli app.
-   1. Set `OP_GOERLI_ALCHEMY_KEY` to the key for the OP Goerli app
+   1. Set `MNEMONIC` to point to an account that has BNB on the BSC test network and the opBNB test network.
+   2. Set `GOERLI_ALCHEMY_KEY` to the key for the Goerli app.
+   3. Set `OP_GOERLI_ALCHEMY_KEY` to the key for the OP Goerli app
    
 1. Install the necessary packages.
 
@@ -60,27 +57,27 @@ This setup assumes you already have [Node.js](https://nodejs.org/en/) and [yarn]
    yarn
    ```
 
-#### Ethereum message to OP Mainnet, or Goerli to OP Goerli (deposit)
+#### BSC message to opBNB, or BSC to opBNB (deposit)
 
-1. Connect the Hardhat console to OP Goerli (L2):
+1. Connect the Hardhat console to opBNB (L2):
 
    ```sh
-   yarn hardhat console --network op-goerli
+   yarn hardhat console --network opBNBTestnet
    ```  
 
 1. Connect to the greeter on L2:
   
    ```js
    Greeter = await ethers.getContractFactory("Greeter")
-   greeter = await Greeter.attach("0xE8B462EEF7Cbd4C855Ea4B65De65a5c5Bab650A9")
+   greeter = await Greeter.attach("0xa06C7F6204e2ed0cf112B670Eaa53246Ae75cf74")
    await greeter.greet()
    ```
 
 
-1. In a separatate terminal window connect the Hardhat console to Goerli (L1):
+1. In a separatate terminal window connect the Hardhat console to BSC (L1):
 
    ```sh
-   yarn hardhat console --network goerli
+   yarn hardhat console --network bscTestnet
    ```
 
 1. Deploy and call the `FromL1_ControlL2Greeter` contract.
@@ -109,19 +106,19 @@ This setup assumes you already have [Node.js](https://nodejs.org/en/) and [yarn]
    Notice that the `xorigin` value is the controller address.
    The `user` value is your user's address, but that one is provided as part of the message.
 
-#### OP Mainnet message to Ethereum, or OP Goerli message to Goerli (withdrawal)
+#### opBNB message to BSC, or opBNB message to BSC (withdrawal)
 
 ##### Send the message
 
 1. Get the current L1 greeting. There are two ways to do that:
 
-   - [Browse to the Greeter contract on Etherscan](https://goerli.etherscan.io/address/0x7fA4D972bB15B71358da2D937E4A830A9084cf2e#readContract) and click **greet** to see the greeting.
+   - [Browse to the Greeter contract on BSCscan](https://testnet.bscscan.com/address/0x04F6e0f8d032fc4fFDcA9eE56f1678DA57eB478E#readContract) and click **greet** to see the greeting.
 
-   - Run these commands in the Hardhat console connected to L1 Goerli:
+   - Run these commands in the Hardhat console connected to L1 BSC:
 
      ```js
      Greeter = await ethers.getContractFactory("Greeter")
-     greeter = await Greeter.attach("0x4d0fcc1Bedd933dA4121240C2955c3Ceb68AAE84")
+     greeter = await Greeter.attach("0x04F6e0f8d032fc4fFDcA9eE56f1678DA57eB478E")
      await greeter.greet()     
      ```
 
@@ -157,10 +154,10 @@ This setup assumes you already have [Node.js](https://nodejs.org/en/) and [yarn]
 Once the state root is published on L1, we can present the [Merkle proof](https://medium.com/crypto-0-nite/merkle-proofs-explained-6dd429623dc5) for the withdrawal.
 The fault challenge window starts after you do this, so it's best to do it as early as possible. [You can read more about this in the documentation](https://community.optimism.io/docs/developers/bedrock/how-is-bedrock-different/#two-phase-withdrawals).
 
-1. Connect the Hardhat console to Goerli (L1):
+1. Connect the Hardhat console to BSC (L1):
 
    ```sh
-   yarn hardhat console --network goerli
+   yarn hardhat console --network bscTestnet
    ```
 
 1. Get the SDK (it is already in `node_modules`).
@@ -179,14 +176,30 @@ The fault challenge window starts after you do this, so it's best to do it as ea
 
    ```js
    l1Signer = await ethers.getSigner()
-   l2Url = `https://opt-goerli.g.alchemy.com/v2/${process.env.OP_GOERLI_ALCHEMY_KEY}`
+   l2Url = `https://opbnb-testnet-rpc.bnbchain.org`
    crossChainMessenger = new sdk.CrossChainMessenger({ 
-      l1ChainId: 5,
-      l2ChainId: 420,
+      l1ChainId: 97,
+      l2ChainId: 5611,
       l1SignerOrProvider: l1Signer, 
       l2SignerOrProvider: new ethers.providers.JsonRpcProvider(l2Url),
+      contracts: {
+         l1:{
+            "AddressManager": "0x0000000000000000000000000000000000000000",
+            "StateCommitmentChain": "0x0000000000000000000000000000000000000000",
+            "CanonicalTransactionChain": "0x0000000000000000000000000000000000000000",
+            "BondManager": "0x0000000000000000000000000000000000000000",
+            "OptimismPortal": "0x2d5D7bEe8ebEf17DE14dd6ADAE8271507994a6E0",
+            "L2OutputOracle": "0xD92aEF4473093C67A7696e475858152D3b2acB7c",
+            "L1CrossDomainMessenger": "0xD506952e78eeCd5d4424B1990a0c99B1568E7c2C",
+            "L1StandardBridge": "0xddB9EB847971DaA82e5dbe2745C429A3B2715B46"
+         },
+         l2: sdk.DEFAULT_L2_CONTRACT_ADDRESSES,
+      },
+      bedrock: true
    })
-   ```
+
+```
+
 
 1. Check the status of the transaction.
    If it is `false`, wait a few seconds and try again.
@@ -215,7 +228,7 @@ The fault challenge window starts after you do this, so it's best to do it as ea
 
 ##### Receive the message
 
-Transactions from OP Mainnet to Ethereum (or OP Goerli to Goerli) are not accepted immediately, because we need to wait [to make sure there are no successful challenges](https://community.optimism.io/docs/how-optimism-works/#fault-proofs).
+Transactions from opBNB to BSC (or opBNB to BSC) are not accepted immediately, because we need to wait [to make sure there are no successful challenges](https://community.optimism.io/docs/how-optimism-works/#fault-proofs).
 Once the fault challenge period is over (ten seconds on OP Goerli, seven days on OP Mainnet) it is necessary to claim the transaction on L1. 
 This is a complex process that requires a [Merkle proof](https://medium.com/crypto-0-nite/merkle-proofs-explained-6dd429623dc5).
 You can do it using [the Optimism SDK](https://www.npmjs.com/package/@eth-optimism/sdk).
@@ -248,7 +261,7 @@ You can do it using [the Optimism SDK](https://www.npmjs.com/package/@eth-optimi
 
    ```js
    Greeter = await ethers.getContractFactory("Greeter")
-   greeter = await Greeter.attach("0x4d0fcc1Bedd933dA4121240C2955c3Ceb68AAE84")
+   greeter = await Greeter.attach("0x04F6e0f8d032fc4fFDcA9eE56f1678DA57eB478E")
    await greeter.greet()
    ```
 

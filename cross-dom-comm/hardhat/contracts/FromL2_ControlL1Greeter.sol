@@ -11,7 +11,7 @@ contract FromL2_ControlL1Greeter {
     // Should be the same on all Optimism networks
     address crossDomainMessengerAddr = 0x4200000000000000000000000000000000000007;
 
-    address greeterL1Addr = 0x4d0fcc1Bedd933dA4121240C2955c3Ceb68AAE84;
+    address greeterL1Addr = 0x04F6e0f8d032fc4fFDcA9eE56f1678DA57eB478E;
 
     function setGreeting(string calldata _greeting) public {
         bytes memory message;
@@ -22,7 +22,7 @@ contract FromL2_ControlL1Greeter {
         ICrossDomainMessenger(crossDomainMessengerAddr).sendMessage(
             greeterL1Addr,
             message,
-            1000000   // irrelevant here
+            5000000   // irrelevant here
         );
     }      // function setGreeting 
 

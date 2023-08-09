@@ -26,15 +26,33 @@ if (!validLength.includes(words)) {
  * @type import('hardhat/config').HardhatUserConfig
  */
 module.exports = {
-  solidity: "0.8.4",
+  solidity: "0.8.19",
+  etherscan: {
+    // Your API key for BSCScan
+    // Obtain one at https://bscscan.com/
+    apiKey: "Z85HEVHNRBA5J2DIMXU7G8XWJ5KPZNHEDW"
+  },
   networks: {
-     "op-goerli": {
-        url: `https://opt-goerli.g.alchemy.com/v2/${process.env.OP_GOERLI_ALCHEMY_KEY}`,
-        accounts: { mnemonic: process.env.MNEMONIC }
+      "opBNBTestnet":{
+        url: "https://opbnb-testnet-rpc.bnbchain.org",
+        chainId: 5611,
+        gas: 2100000,
+        gasPrice: 20000000000,
+        accounts: {mnemonic: process.env.MNEMONIC },
+        timeout: 2000000,
       },
-      "goerli": {
-        url: `https://eth-goerli.g.alchemy.com/v2/${process.env.GOERLI_ALCHEMY_KEY}`,
-        accounts: { mnemonic: process.env.MNEMONIC }
-      }
-  } 
+      "bscTestnet": {
+        url: "https://data-seed-prebsc-1-s1.bnbchain.org:8545",
+        chainId: 97,
+        // gas: "auto",
+        // gasPrice: "auto",
+        accounts: {mnemonic: process.env.MNEMONIC },
+        timeout: 2000000,
+        gas: 5000000,
+        gasPrice: 50000000000
+      },
+  } ,
+  mocha: {
+    timeout: 400000000
+    },
 };

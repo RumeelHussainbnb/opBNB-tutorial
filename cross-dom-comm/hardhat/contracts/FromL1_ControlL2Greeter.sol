@@ -9,9 +9,9 @@ import { ICrossDomainMessenger } from
 contract FromL1_ControlL2Greeter {
     // Taken from https://community.optimism.io/docs/useful-tools/networks/#optimism-goerli
 
-    address crossDomainMessengerAddr = 0x5086d1eEF304eb5284A0f6720f79403b4e9bE294;
+    address crossDomainMessengerAddr = 0xD506952e78eeCd5d4424B1990a0c99B1568E7c2C;
 
-    address greeterL2Addr = 0xE8B462EEF7Cbd4C855Ea4B65De65a5c5Bab650A9;
+    address greeterL2Addr = 0xa06C7F6204e2ed0cf112B670Eaa53246Ae75cf74;
 
     function setGreeting(string calldata _greeting) public {
         bytes memory message;
@@ -22,7 +22,7 @@ contract FromL1_ControlL2Greeter {
         ICrossDomainMessenger(crossDomainMessengerAddr).sendMessage(
             greeterL2Addr,
             message,
-            1000000   // within the free gas limit amount
+            5000000   // within the free gas limit amount
         );
     }      // function setGreeting 
 
