@@ -33,7 +33,7 @@ Once you do that, you can use the SDK normally.
 1. Start the hardhat console
 
    ```sh
-   yarn hardhat console --network l1
+   yarn hardhat console --network bscTestnet
    ```
 
 1. Create a [CrossDomainMessenger](https://sdk.optimism.io/#crosschainmessenger):
@@ -45,10 +45,24 @@ Once you do that, you can use the SDK normally.
    l1ChainId = (await l1Provider._networkPromise).chainId
    l2ChainId = (await l2Provider._networkPromise).chainId  
    crossChainMessenger = new optimismSDK.CrossChainMessenger({
-     l1ChainId: l1ChainId,    
-     l2ChainId: l2ChainId,          
-     l1SignerOrProvider: l1Provider,
-     l2SignerOrProvider: l2Provider,
+      l1ChainId: l1ChainId,    
+      l2ChainId: l2ChainId,          
+      l1SignerOrProvider: l1Provider,
+      l2SignerOrProvider: l2Provider,
+      bedrock: true,
+      contracts: {
+         l1: {
+         "AddressManager": "0x0000000000000000000000000000000000000000",
+         "StateCommitmentChain": "0x0000000000000000000000000000000000000000",
+         "CanonicalTransactionChain": "0x0000000000000000000000000000000000000000",
+         "BondManager": "0x0000000000000000000000000000000000000000",
+         "L1CrossDomainMessenger": "0xD506952e78eeCd5d4424B1990a0c99B1568E7c2C",
+         "L1StandardBridge": "0x677311Fd2cCc511Bbc0f581E8d9a07B033D5E840",
+         "OptimismPortal": "0x4386C8ABf2009aC0c263462Da568DD9d46e52a31",
+         "L2OutputOracle": "0xFf2394Bb843012562f4349C6632a0EcB92fC8810"
+         },
+         l2: optimismSDK.DEFAULT_L2_CONTRACT_ADDRESSES,
+      }
    })
    ```
 
@@ -59,8 +73,16 @@ We are going to trace [this deposit](https://goerli.etherscan.io/tx/0x80da95d06c
 1. Get the message status.
 
    ```js
-   l1TxHash = "0x80da95d06cfe8504b11295c8b3926709ccd6614b23863cdad721acd5f53c9052"
-   await crossChainMessenger.getMessageStatus(l1TxHash)
+   gwei = BigInt(1e9)
+   eth = gwei * gwei   // 10^18
+   centieth = eth/100n
+   l1TxHash = "0x18feaa9850ed186a6acd2101c8557d98e60835e3582d4107621cf15f5ff34a53"
+   await crossChainMessenger.getMessageStatus(l1TxHash,{
+    overrides: {
+      gasPrice: 15n * gwei,
+      gasLimit: 10000000n,
+    }
+   })
    ```
 
    The list of message statuses and their meaning is [in the SDK documentation](https://sdk.optimism.io/enums/messagestatus).
@@ -69,7 +91,12 @@ We are going to trace [this deposit](https://goerli.etherscan.io/tx/0x80da95d06c
 1. Get the message receipt.
 
    ```js
-   l2Rcpt = await crossChainMessenger.getMessageReceipt(l1TxHash)
+   l2Rcpt = await crossChainMessenger.getMessageReceipt(l1TxHash,{
+    overrides: {
+      gasPrice: 15n * gwei,
+      gasLimit: 10000000n,
+    }
+   })
    ```
 
    In addition to `l2Rcpt.transactionReceipt`, which contains the standard transaction receipt, you get `l2Rcpt.receiptStatus` with the transaction status. 

@@ -70,8 +70,12 @@ const describeTx = async tx => {
   console.log(`tx:${tx.transactionHash}`)
   // Assume all tokens have decimals = 18
   console.log(`\tAmount: ${tx.amount/1e18} ${await getSymbol(tx.l1Token)}`)
-  console.log(`\tRelayed: ${await crossChainMessenger.getMessageStatus(tx.transactionHash)  
-                              == optimismSDK.MessageStatus.RELAYED}`)
+  console.log(`\tRelayed: ${await crossChainMessenger.getMessageStatus(tx.transactionHash,{
+        overrides: {
+          gasPrice: 15n * gwei, // the default gas price is 1.5 gwei, which is underpriced on bsc testnet, so we manually set it to 5 gwei
+          gasLimit: 10000000n, 
+        }
+      })  == optimismSDK.MessageStatus.RELAYED}`)
 }  // describeTx
 
 
@@ -79,14 +83,24 @@ const main = async () => {
     await setup()
 
     // The address we trace
-    const addr = "0xf56aa90fea6c07eb0c190552caa166357a824a39";
+    const addr = "0x27cf2CEAcdedce834f1673005Ed1C60efA63c081";
 
-    const deposits = await crossChainMessenger.getDepositsByAddress(addr)
+    const deposits = await crossChainMessenger.getDepositsByAddress(addr, {
+      overrides: {
+        gasPrice: 15n * gwei, // the default gas price is 1.5 gwei, which is underpriced on bsc testnet, so we manually set it to 5 gwei
+        gasLimit: 10000000n, 
+      }
+    })
     console.log(`Deposits by address ${addr}`)
     for (var i=0; i<deposits.length; i++)
       await describeTx(deposits[i])
 
-    const withdrawals = await crossChainMessenger.getWithdrawalsByAddress(addr)
+    const withdrawals = await crossChainMessenger.getWithdrawalsByAddress(addr, {
+      overrides: {
+        gasPrice: 15n * gwei, // the default gas price is 1.5 gwei, which is underpriced on bsc testnet, so we manually set it to 5 gwei
+        gasLimit: 10000000n, 
+      }
+    })
     console.log(`\n\n\nWithdrawals by address ${addr}`)
     for (var i=0; i<withdrawals.length; i++)
       await describeTx(withdrawals[i])
